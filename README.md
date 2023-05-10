@@ -5,6 +5,10 @@ A simple Django App using docker
 - Docker
 - Docker Compose
 
+## Technologies Used
+- Python (Django)
+- Postgresql
+
 ## Running the application
 To run the application, follow these steps:
 
@@ -17,4 +21,29 @@ To run the application, follow these steps:
 ## Stopping the application
 To stop the application, run `docker-compose down -v` command in the project directory. This will stop and remove all the containers, networks, and volumes created by docker-compose up command.
 
+## Endpoints:
 
+### GET: /users/
+Retrieves all users from the database.
+
+### POST: /users/
+Creates a new user.
+
+**Parameters:**
+
+- email (required): The email of the user.
+- password (required): The password of the user.
+- is_admin (optional): Whether the user is an administrator (default: False).
+- is_staff (optional): Whether the user is staff (default: False).
+
+### GET: /users/{id}/
+Retrieves a particular user based on their ID.
+
+**Parameters:**
+- id (required): The ID of the user to retrieve.
+
+### DELETE: /users/{id}/
+Deletes a particular user based on their ID.
+
+**Parameters:**
+- id (required): The ID of the user to delete.
