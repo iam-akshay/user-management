@@ -5,8 +5,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from django.db.utils import IntegrityError
 
+from rest_framework.permissions import IsAuthenticated
+
 
 class UsersView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, *args):
         """
         Get all users
@@ -47,6 +51,8 @@ class UsersView(APIView):
 
 
 class UserView(APIView):
+    permission_classes = [IsAuthenticated]
+
     def get(self, request, id, *args):
         """
         Get Particular user

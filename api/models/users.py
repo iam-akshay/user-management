@@ -1,5 +1,7 @@
+from django.apps import apps
 from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser
+from django.contrib.auth.hashers import make_password
 
 
 class UserManager(BaseUserManager):
@@ -10,13 +12,9 @@ class UserManager(BaseUserManager):
         if not email:
             raise ValueError("Users must have an email address")
 
-        user = self.model(
-            email=self.normalize_email(email),
-        )
+        user = self.model(email=self.normalize_email(email), **kwargs)
 
         user.set_password(password)
-        user.is_staff = kwargs.get("is_staff", False)
-        user.is_admin = kwargs.get("is_admin", False)
         user.save(using=self._db)
         return user
 
@@ -24,6 +22,16 @@ class UserManager(BaseUserManager):
         """
         Creates and saves a staff user with the given email and password.
         """
+
+        kwargs.update({"is_staff": True, "is_admin": False})
+        user = self.create_user(**kwargs)
+        return user
+
+    def create_superuser(self, **kwargs):
+        """
+        Creates and saves a super user with the given email and password.
+        """
+        kwargs.update({"is_staff": True, "is_admin": True})
         user = self.create_user(**kwargs)
         return user
 
@@ -35,15 +43,11 @@ class User(AbstractBaseUser):
         unique=True,
     )
     is_active = models.BooleanField(default=True)
-    is_staff = models.BooleanField(
-        default=False
-    )  # a admin user; non super-user
-    is_admin = models.BooleanField(default=False)  # a superuser
-
-    # notice the absence of a "Password field", that is built in.
+    is_staff = models.BooleanField(default=False)
+    is_admin = models.BooleanField(default=False)
 
     USERNAME_FIELD = "email"
-    REQUIRED_FIELDS = []  # Email & Password are required by default.
+    REQUIRED_FIELDS = []
 
     objects = UserManager()
 
@@ -52,10 +56,8 @@ class User(AbstractBaseUser):
 
     def has_module_perms(self, app_label):
         "Does the user have permissions to view the app `app_label`?"
-        # Simplest possible answer: Yes, always
         return True
 
     def has_perm(self, perm, obj=None):
         "Does the user have a specific permission?"
-        # Simplest possible answer: Yes, always
         return True
